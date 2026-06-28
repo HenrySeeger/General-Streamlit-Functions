@@ -6,12 +6,15 @@ import plotly.express as px
 
 rad_options = [1, "2", 3, "giraffe", 3.14]
 
+num_cols = 4
+num_cols = min(num_cols, len(rad_options))
+
 for i, default_val in enumerate(rad_options):
   key = f"rad{i}"
   if key not in st.session_state:
     st.session_state[key] = rad_options[i]
 
-cols = st.columns(len(rad_options), border = False)
+cols = st.columns(num_cols, border = True)
 
 def rad_change(changed):
   index_sum = len(rad_options) * (len(rad_options) - 1) / 2 # -1 instead of +1 because of zero-indexing
