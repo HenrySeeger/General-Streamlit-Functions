@@ -1,10 +1,4 @@
-# app.py
-import numpy as np
-import pandas as pd
 import streamlit as st
-import plotly.express as px
-
-
 
 def radio_buttons_exclusive(row_labels = ["one", "two", "three"], col_headers = [1, 2, 3, 4]):
   horizontal = len(col_headers) > len(row_labels)
@@ -13,7 +7,6 @@ def radio_buttons_exclusive(row_labels = ["one", "two", "three"], col_headers = 
   var_names = [str(val) for val in var_names] # var_names is used for the label arg in st.radio() which requires a string input
 
   button_options = col_headers if horizontal else row_labels
-
 
   for i, default_val in enumerate(button_options):
     key = f"rad{i}"
