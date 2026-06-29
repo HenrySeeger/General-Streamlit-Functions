@@ -4,31 +4,36 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 
-rad_options = [1, "2", 3, "giraffe", 3.14, 6, 7, 8]
 
-num_cols = 4
-num_cols = min(num_cols, len(rad_options))
-var_names = [f"var{i}" for i in range(num_cols)]
 
-horizontal = True
+def radio_buttons_exclusive(row_labels = ["one", "two", "three"], col_headers = [1, 2, 3, 4]):
+  horizontal = len(col_headers) > len(row_labels)
+  
+  var_names = row_labels if horizontal else col_headers
+  var_names = [str(val) for val in var_names] # var_names is used for the label arg in st.radio() which requires a string input
 
-for i, default_val in enumerate(rad_options):
-  key = f"rad{i}"
-  if key not in st.session_state:
-    st.session_state[key] = rad_options[i]
+  button_options = col_headers if horizontal else row_labels
 
-cols = list(range(num_cols)) if horizontal else st.columns(num_cols, border = False)
 
-def rad_change(changed):
-  for i in [i for i in range(num_cols) if i != changed]:
-    if st.session_state[f"rad{changed}"] == st.session_state[f"rad{i}"]:
-      available_indices = list(set(range(len(rad_options))) ^ {rad_options.index(st.session_state[f"rad{j}"]) for j in range(num_cols) if j != i})
-      st.session_state[f"rad{i}"] = rad_options[available_indices[0]]
-      break
+  for i, default_val in enumerate(button_options):
+    key = f"rad{i}"
+    if key not in st.session_state:
+      st.session_state[key] = default_val
 
-for i, col in enumerate(cols):
-  try:
-    with col:
-      st.radio(label = var_names[i], options = rad_options, horizontal = horizontal, key = f"rad{i}", on_change = rad_change, args = (i,))
-  except:
-    st.radio(label = var_names[i], options = rad_options, horizontal = horizontal, key = f"rad{i}", on_change = rad_change, args = (i,))
+  cols = var_names if horizontal else st.columns(len(col_headers), border = False)
+
+  def rad_change(changed):
+    for i in [i for i in range(len(var_names)) if i != changed]:
+      if st.session_state[f"rad{changed}"] == st.session_state[f"rad{i}"]:
+        available_indices = list(set(range(len(button_options))) ^ {button_options.index(st.session_state[f"rad{j}"]) for j in range(len(var_names)) if j != i}) # The available indices are the indices not currently being used (all indices xor in-use indices)
+        st.session_state[f"rad{i}"] = button_options[available_indices[0]]
+        break
+
+  for i, col in enumerate(cols):
+    try:
+      with col:
+        st.radio(label = var_names[i], options = button_options, horizontal = horizontal, key = f"rad{i}", on_change = rad_change, args = (i,))
+    except:
+      st.radio(label = var_names[i], options = button_options, horizontal = horizontal, key = f"rad{i}", on_change = rad_change, args = (i,))
+
+radio_buttons_exclusive()
